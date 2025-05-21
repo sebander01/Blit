@@ -11,6 +11,7 @@ public class SpawnOnTouch : MonoBehaviour
     public GameObject shapeToSpawn;
     public int ballCount;
     private bool canSpawn;
+    private int spawnedBalls;
     public bool CanSpawn
     {
         get => canSpawn;
@@ -50,11 +51,8 @@ public class SpawnOnTouch : MonoBehaviour
                 //We can't spawn
                 CanSpawn = false;
                 
+                //Gets the touch position of the players hand
                 Vector2 touchPosition = ControlManager.Instance.TranslateTouchPosition();
-                ////Collect the position of the touch
-                //Vector2 touchPosition = ControlManager.Instance.singleTouch.ReadValue<Vector2>();
-                ////Translate to screen space to world space
-                //touchPosition = Camera.main.ScreenToWorldPoint(touchPosition);
 
 
                 //Transform the object variable position based on the translated screen space
@@ -63,8 +61,10 @@ public class SpawnOnTouch : MonoBehaviour
                 if (ValidatePlayArea(shapeToSpawn.transform))
                 {
                     //Spawn the object
-                    Instantiate(shapeToSpawn);
+                    GameObject copy = Instantiate(shapeToSpawn);
+                    copy.name = shapeToSpawn.name + spawnedBalls;
                     ballCount--;
+                    spawnedBalls++;
                 }
                 else
                 {

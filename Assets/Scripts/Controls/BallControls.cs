@@ -7,6 +7,7 @@ public class BallControls : MonoBehaviour
     private ControlManager.TouchDirection[,] direction;
 
     private bool canJump = true;
+    private bool touchingBall = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -18,13 +19,25 @@ public class BallControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(ControlManager.Instance.singleClick.WasPressedThisFrame())
+        {
+            if (TouchingBall(ControlManager.Instance.TranslateTouchPosition()))
+            {
+                touchingBall = true;
+            }
+        }
         if (ControlManager.Instance.singleClick.WasReleasedThisFrame())
         {
             //Detect the swipe direction
             direction = ControlManager.Instance.DetectSwipe();
 
-            //Jump if possible
-            StartCoroutine(LaunchBall());
+            //Check if this ball can be moved
+            if(touchingBall)
+            {
+                touchingBall = false;
+                //Jump if possible
+                StartCoroutine(LaunchBall());
+            }
         }
     }
 
@@ -43,6 +56,22 @@ public class BallControls : MonoBehaviour
             yield return new WaitForSecondsRealtime(ControlManager.Instance.jumpCooldown);
             //Restore jumping ability
             canJump = true;
+        }
+    }
+
+    /// <summary>
+    /// Checks if this ball is being pressed
+    /// </summary>
+    private bool TouchingBall(Vector2 target)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(target, this.transform.position);
+        if (hit.collider.gameObject.name == this.gameObject.name)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
 
     }
