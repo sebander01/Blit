@@ -18,11 +18,7 @@ public class SpawnOnTouch : MonoBehaviour
             canSpawn = value; 
         }
     }
-    #region PlayerControls
-    private PlayerControls PlayerControls;
-    private InputAction singleTouch;
-    private InputAction singleClick;
-    #endregion 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,36 +28,15 @@ public class SpawnOnTouch : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(singleClick.WasPressedThisFrame())
+        if(ControlManager.Instance.singleClick.WasPressedThisFrame())
         {
             SpawnObject();
         }
 
-        if(singleClick.WasReleasedThisFrame())
+        if(ControlManager.Instance.singleClick.WasReleasedThisFrame())
         {
             canSpawn = true;
         }
-    }
-
-    private void Awake()
-    {
-        PlayerControls = new PlayerControls();
-        singleTouch = PlayerControls.BlitControls.Touch;
-        singleClick = PlayerControls.BlitControls.TouchClick;
-    }
-
-    private void OnEnable()
-    {
-        PlayerControls.Enable();
-        singleTouch.Enable();
-        singleClick.Enable();
-    }
-
-    private void OnDisable()
-    {
-        PlayerControls.Disable();
-        singleTouch.Disable();
-        singleClick.Disable();
     }
 
     /// <summary>
@@ -74,12 +49,14 @@ public class SpawnOnTouch : MonoBehaviour
             {
                 //We can't spawn
                 CanSpawn = false;
-                //Collect the position of the touch
-                Vector2 touchPosition = singleTouch.ReadValue<Vector2>();
-                //Translate to screen space to world space
-                touchPosition = Camera.main.ScreenToWorldPoint(touchPosition);
                 
-                
+                Vector2 touchPosition = ControlManager.Instance.TranslateTouchPosition();
+                ////Collect the position of the touch
+                //Vector2 touchPosition = ControlManager.Instance.singleTouch.ReadValue<Vector2>();
+                ////Translate to screen space to world space
+                //touchPosition = Camera.main.ScreenToWorldPoint(touchPosition);
+
+
                 //Transform the object variable position based on the translated screen space
                 shapeToSpawn.transform.position = new Vector2(touchPosition.x, touchPosition.y);
                 //Validate the screen space
