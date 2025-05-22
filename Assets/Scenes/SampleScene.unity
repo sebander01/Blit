@@ -300,8 +300,11 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  jumpForce: 5
+  jumpMaxForce: 10
   jumpCooldown: 1
+  pushMaxForce: 10
+  pushCooldown: 1
+  speedOffSet: 2
 --- !u!4 &382565876
 Transform:
   m_ObjectHideFlags: 0
