@@ -57,6 +57,7 @@ public class SpawnOnTouch : MonoBehaviour
 
                 //Transform the object variable position based on the translated screen space
                 shapeToSpawn.transform.position = new Vector2(touchPosition.x, touchPosition.y);
+
                 //Validate the screen space
                 if (ValidatePlayArea(shapeToSpawn.transform))
                 {
@@ -65,6 +66,16 @@ public class SpawnOnTouch : MonoBehaviour
                     copy.name = shapeToSpawn.name + spawnedBalls;
                     ballCount--;
                     spawnedBalls++;
+
+                    //Add the ball to the camera controller so the camera will match it's position
+                    try
+                    {
+                        GameObject.Find("CameraHolder").GetComponent<CameraController>().balls.Add(copy);
+                    }
+                    catch
+                    {
+                        Debug.Log("We couldn't find the camera");
+                    }
                 }
                 else
                 {
