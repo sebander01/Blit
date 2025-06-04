@@ -5,7 +5,7 @@ public class CameraController : MonoBehaviour
 {
 
     public List<GameObject> balls;
-    private Transform thisCam;
+    public Transform thisCam;
     private Vector2 lastPosition;
     public float camSpeedx;
     public float camSpeedy;
@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        thisCam = this.GetComponent<Transform>();
+
     }
 
     // Update is called once per frame
@@ -25,10 +25,15 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-
+        Move();
     }
 
     private void FixedUpdate()
+    {
+        
+    }
+
+    public void Move()
     {
         #region SetAverageCameraPosition
         if (balls.Count != 0 || balls.Count != 1)
@@ -71,27 +76,25 @@ public class CameraController : MonoBehaviour
         if (balls.Count == 1)
         {
 
-
             //Moving along the Y
             if (lastPosition.y > thisCam.transform.position.y + offSety)
             {
-                thisCam.transform.position = new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy, thisCam.transform.position.z);
+                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
             }
             else if (lastPosition.y < thisCam.transform.position.y - offSety)
             {
-                thisCam.transform.position = new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy, thisCam.transform.position.z);
+                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
             }
 
             //Then are able to move the camera position depending on if it's x is an increase (right) or a decrease (Left)
-            else if (lastPosition.x > thisCam.transform.position.x + offSetx)
+            if (lastPosition.x > thisCam.transform.position.x + offSetx)
             {
-                thisCam.transform.position = new Vector3(thisCam.transform.position.x + camSpeedx, thisCam.transform.position.y, thisCam.transform.position.z);
+                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
             }
             else if (lastPosition.x < thisCam.transform.position.x - offSetx)
             {
-                thisCam.transform.position = new Vector3(thisCam.transform.position.x - camSpeedx, thisCam.transform.position.y, thisCam.transform.position.z);
+                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
             }
-
 
             lastPosition = new Vector2(balls[0].transform.position.x, balls[0].transform.position.y);
         }

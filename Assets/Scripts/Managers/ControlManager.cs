@@ -30,6 +30,9 @@ public class ControlManager : MonoBehaviour
 
     private bool isBeingHeld;
 
+    /// <summary>
+    /// 0,0 = y 0,1 = x variable that holds last swipe speed
+    /// </summary>
     public float[,] speed = { { 0, 0 } };
     public enum TouchDirection
     {

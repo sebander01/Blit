@@ -70,7 +70,7 @@ public class SpawnOnTouch : MonoBehaviour
                     //Add the ball to the camera controller so the camera will match it's position
                     try
                     {
-                        GameObject.Find("CameraHolder").GetComponent<CameraController>().balls.Add(copy);
+                        GameObject.Find("Main Camera").GetComponent<CameraController>().balls.Add(copy);
                     }
                     catch
                     {
