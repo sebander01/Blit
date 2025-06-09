@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
+using static UnityEngine.GraphicsBuffer;
 
 public class CameraController : MonoBehaviour
 {
@@ -11,6 +14,7 @@ public class CameraController : MonoBehaviour
     public float camSpeedy;
     public float offSetx;
     public float offSety;
+    private Vector3 velocity = Vector3.zero;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,7 +34,7 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
+       
     }
 
     public void Move()
@@ -75,25 +79,31 @@ public class CameraController : MonoBehaviour
         }
         if (balls.Count == 1)
         {
-
-            //Moving along the Y
-            if (lastPosition.y > thisCam.transform.position.y + offSety)
-            {
-                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
-            }
-            else if (lastPosition.y < thisCam.transform.position.y - offSety)
-            {
-                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
-            }
+            ////Moving along the Y
+            //if (lastPosition.y > thisCam.transform.position.y + offSety)
+            //{
+            //    //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
+            //    thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ref velocity, ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
+            //}
+            //else if (lastPosition.y < thisCam.transform.position.y - offSety)
+            //{
+            //    //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
+            //    thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ref velocity, ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
+            //}
 
             //Then are able to move the camera position depending on if it's x is an increase (right) or a decrease (Left)
             if (lastPosition.x > thisCam.transform.position.x + offSetx)
             {
-                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
+                //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
+                velocity = new Vector3(balls[0].GetComponent<Rigidbody2D>().linearVelocityX + Time.deltaTime, 0, 0);
+                thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx * balls[0].GetComponent<Rigidbody2D>().linearVelocityX * Time.deltaTime, thisCam.position.y, thisCam.position.z), ref velocity, balls[0].GetComponent<Rigidbody2D>().linearVelocityX + camSpeedx * Time.deltaTime);
             }
             else if (lastPosition.x < thisCam.transform.position.x - offSetx)
             {
-                thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
+                //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
+                //thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ref velocity, ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
+                velocity = new Vector3(balls[0].GetComponent<Rigidbody2D>().linearVelocityX + Time.deltaTime, 0, 0);
+                thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * balls[0].GetComponent<Rigidbody2D>().linearVelocityX * Time.deltaTime, thisCam.position.y, thisCam.position.z), ref velocity, balls[0].GetComponent<Rigidbody2D>().linearVelocityX - camSpeedx * Time.deltaTime);
             }
 
             lastPosition = new Vector2(balls[0].transform.position.x, balls[0].transform.position.y);
