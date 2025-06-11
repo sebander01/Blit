@@ -59,12 +59,16 @@ public class SpawnOnTouch : MonoBehaviour
                 shapeToSpawn.transform.position = new Vector2(touchPosition.x, touchPosition.y);
 
                 //Validate the screen space
+                //If in the play area
                 if (ValidatePlayArea(shapeToSpawn.transform))
                 {
                     //Spawn the object
                     GameObject copy = Instantiate(shapeToSpawn);
+                    //Give the object a unique name
                     copy.name = shapeToSpawn.name + spawnedBalls;
+                    //Decrease ball count
                     ballCount--;
+                    //Increase the spawned balls ID Counter
                     spawnedBalls++;
 
                     //Add the ball to the camera controller so the camera will match it's position
@@ -79,7 +83,7 @@ public class SpawnOnTouch : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Not in play area");
+                    //not in play area
                 }
             }
     }
@@ -89,13 +93,28 @@ public class SpawnOnTouch : MonoBehaviour
     /// </summary>
     private bool ValidatePlayArea(Transform target)
     {
-        RaycastHit2D hit = Physics2D.Raycast(target.position, this.transform.position);
-        if (hit.collider.tag == "PlayZone")
+        //Try to verify
+        try
         {
-            return true;
+            //Create a ray cast 2D
+            RaycastHit2D hit = Physics2D.Raycast(target.position, this.transform.position);
+            //Check if that ray cast hit's a collider with the tag playerzone
+            if (hit.collider.tag == "PlayZone")
+            {
+                //if it does we can spawn
+                return true;
+            }
+            //If it doesn't
+            else
+            {
+                //We can not spawn
+                return false;
+            }
         }
-        else
+        //If we can't verify usually from clicking void space just assume false
+        catch
         {
+            Debug.LogWarning("ValidatePlayArea couldn't validate likely from clicking void space and is assumed false");
             return false;
         }
         

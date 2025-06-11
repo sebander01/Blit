@@ -874,9 +874,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   balls: []
   thisCam: {fileID: 519420032}
-  camSpeedx: 30
+  camSpeedx: 10
   camSpeedy: 10
-  offSetx: 2
+  offSetx: 3.5
   offSety: 1.5
 --- !u!1 &619394800
 GameObject:

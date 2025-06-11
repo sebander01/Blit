@@ -131,15 +131,29 @@ public class BallControls : MonoBehaviour
     /// </summary>
     private bool TouchingBall(Vector2 target)
     {
-        RaycastHit2D hit = Physics2D.Raycast(target, this.transform.position);
-        if (hit.collider.gameObject.name == this.gameObject.name)
+        //Try to cast a ray to see if ball is touched
+        try
         {
-            return true;
+            //Cast a ray
+            RaycastHit2D hit = Physics2D.Raycast(target, this.transform.position);
+            //Check if that ray is hitting the correct object based on it's name and hit name
+            if (hit.collider.gameObject.name == this.gameObject.name)
+            {
+                //If it is return true
+                return true;
+            }
+            else
+            {
+                //If it is not return false
+                return false;
+            }
         }
-        else
+        //If we get an error usually from a void space being hit
+        catch
         {
+            //We assume the validation has failed
+            Debug.LogWarning("Touchball couldn't validate likely from void space and is assumed false");
             return false;
         }
-
     }
 }

@@ -85,7 +85,7 @@ public class CameraController : MonoBehaviour
             }
             //Moving along the x left
             //We make sure that the new position will factor for an offset
-            else if (lastPosition.x < thisCam.transform.position.x - offSetx)
+            if (lastPosition.x < thisCam.transform.position.x - offSetx)
             {
                 //This line fixes an issue where camera momentum sometimes carried over when going left specificially making it impossible to go left if you had already started moving right unless in a dead stop.
                 //We make sure that we are moving a - velocity
