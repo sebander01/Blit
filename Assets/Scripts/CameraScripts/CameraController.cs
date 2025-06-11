@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        Move();
+        CameraMove();
     }
 
     private void FixedUpdate()
@@ -37,77 +37,85 @@ public class CameraController : MonoBehaviour
        
     }
 
-    public void Move()
+    /// <summary>
+    /// This is a method that allows the camera to move if there is only 1 spawned ball it focuses the camera on just that ball but if we spawn more it averages a camera position
+    /// </summary>
+    public void CameraMove()
     {
         #region SetAverageCameraPosition
+        //If there are multiple balls in the scene start trying to average it
         if (balls.Count != 0 || balls.Count != 1)
         {
-            ////Temp variables to hold our x and y sums
-            //float sumOfPositionsx = 0;
-            //float sumOfPositionsy = 0;
 
-            ////For each ball in our list of balls
-            //foreach (GameObject ball in balls)
-            //{
-            //    //Sum the x and y positions seperately
-            //    sumOfPositionsx = sumOfPositionsx + ball.transform.position.x;
-            //    sumOfPositionsy = sumOfPositionsy + ball.transform.position.y;
-            //}
-
-            ////Then are able to move the camera position depending on if it's x is an increase (right) or a decrease (Left)
-            //if (sumOfPositionsx / balls.Count > lastPosition.x)
-            //{
-            //    thisCam.transform.position = new Vector3(thisCam.transform.position.x + camSpeed, thisCam.transform.position.y, thisCam.transform.position.z);
-            //}
-            //else if (sumOfPositionsx / balls.Count < lastPosition.x)
-            //{
-            //    thisCam.transform.position = new Vector3(thisCam.transform.position.x - camSpeed, thisCam.transform.position.y, thisCam.transform.position.z);
-            //}
-
-            ////Then we move the camera on the Y depending on if Y is an increase (Up) or a decrease (Down)
-            //if (sumOfPositionsy / balls.Count > lastPosition.y)
-            //{
-            //    thisCam.transform.position = new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeed, thisCam.transform.position.z);
-            //}
-            //else if (sumOfPositionsy / balls.Count < lastPosition.y)
-            //{
-            //    thisCam.transform.position = new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeed, thisCam.transform.position.z);
-            //}
-
-            ////We use the sum of x and sum of y in a new vector2 (Sum x / ball.count, Sumy / ball count)
-            //lastPosition = new Vector2(sumOfPositionsx / balls.Count, sumOfPositionsy / balls.Count);
         }
+        //Otherwise if there is just 1 ball in the scene we need to focus on it
         if (balls.Count == 1)
         {
-            ////Moving along the Y
-            //if (lastPosition.y > thisCam.transform.position.y + offSety)
-            //{
-            //    //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
-            //    thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y + camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ref velocity, ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
-            //}
-            //else if (lastPosition.y < thisCam.transform.position.y - offSety)
-            //{
-            //    //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
-            //    thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.transform.position.y - camSpeedy * Time.fixedUnscaledDeltaTime, thisCam.transform.position.z), ref velocity, ControlManager.Instance.speed[0, 0] * camSpeedy * Time.deltaTime);
-            //}
-
-            //Then are able to move the camera position depending on if it's x is an increase (right) or a decrease (Left)
+            #region Move camera along Y
+            //Moving along the Y up
+            //We make sure that the camera will factor for an offset
+            if (lastPosition.y > thisCam.transform.position.y + offSety)
+            {
+                //Make the velocity go up by the speed of the y linear velocity
+                velocity = new Vector3(0, balls[0].GetComponent<Rigidbody2D>().linearVelocityY + Time.deltaTime, 0);
+                //SmoothDamp allows us to smoothly transition between directions. We give it a target that factors for the new position with camera speed and ball velocity so it can always keep up. Then for the speed with use a similar calculation again so it keeps up.
+                thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.position.y + camSpeedy + balls[0].GetComponent<Rigidbody2D>().linearVelocityY * Time.deltaTime, thisCam.transform.position.z), ref velocity, balls[0].GetComponent<Rigidbody2D>().linearVelocityY + camSpeedy * Time.deltaTime);
+            }
+            //Move along the Y down
+            //We make sure the camera will factor for an offset
+            else if (lastPosition.y < thisCam.transform.position.y - offSety)
+            {
+                velocity = new Vector3(0, balls[0].GetComponent<Rigidbody2D>().linearVelocityY - Time.deltaTime, 0);
+                thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.transform.position.x, thisCam.position.y - camSpeedy - balls[0].GetComponent<Rigidbody2D>().linearVelocityY * Time.deltaTime, thisCam.transform.position.z), ref velocity, -balls[0].GetComponent<Rigidbody2D>().linearVelocityY + camSpeedy * Time.deltaTime);
+            }
+            #endregion
+            #region Move camera along x
+            //Moving along the x right
+            //We make sure that the new position will factor for an offset
             if (lastPosition.x > thisCam.transform.position.x + offSetx)
             {
-                //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
-                velocity = new Vector3(balls[0].GetComponent<Rigidbody2D>().linearVelocityX + Time.deltaTime, 0, 0);
-                thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx * balls[0].GetComponent<Rigidbody2D>().linearVelocityX * Time.deltaTime, thisCam.position.y, thisCam.position.z), ref velocity, balls[0].GetComponent<Rigidbody2D>().linearVelocityX + camSpeedx * Time.deltaTime);
+                //This line fixes an issue where camera momentum sometimes carried over when going left specificially making it impossible to go left if you had already started moving right unless in a dead stop.
+                //We make sure we are moving a + velocity
+                //If we are moving a negative velocity we do nothing
+                if (balls[0].GetComponent<Rigidbody2D>().linearVelocityX > 0)
+                {
+                    //Move right in a method for easy adjustments in the future since it's reused later
+                    moveRight();
+                }
             }
+            //Moving along the x left
+            //We make sure that the new position will factor for an offset
             else if (lastPosition.x < thisCam.transform.position.x - offSetx)
             {
-                //thisCam.position = Vector3.Slerp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
-                //thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * Time.fixedUnscaledDeltaTime, thisCam.position.y, thisCam.position.z), ref velocity, ControlManager.Instance.speed[0, 1] * camSpeedx * Time.deltaTime);
-                velocity = new Vector3(balls[0].GetComponent<Rigidbody2D>().linearVelocityX + Time.deltaTime, 0, 0);
-                thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx * balls[0].GetComponent<Rigidbody2D>().linearVelocityX * Time.deltaTime, thisCam.position.y, thisCam.position.z), ref velocity, balls[0].GetComponent<Rigidbody2D>().linearVelocityX - camSpeedx * Time.deltaTime);
+                //This line fixes an issue where camera momentum sometimes carried over when going left specificially making it impossible to go left if you had already started moving right unless in a dead stop.
+                //We make sure that we are moving a - velocity
+                if (balls[0].GetComponent<Rigidbody2D>().linearVelocityX <= 0)
+                {
+                    velocity = new Vector3(balls[0].GetComponent<Rigidbody2D>().linearVelocityX - Time.deltaTime, 0, 0);
+                    thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x - camSpeedx - balls[0].GetComponent<Rigidbody2D>().linearVelocityX * Time.deltaTime, thisCam.position.y, thisCam.position.z), ref velocity, -balls[0].GetComponent<Rigidbody2D>().linearVelocityX + camSpeedx * Time.deltaTime);
+                }
+                //If we are still moving a + velocity we keep moving the camera the right direction because it's not time to switch yet
+                else
+                {
+                    //Move right in a method for easy adjustments as it was used in the past aswell
+                    moveRight();
+                }
             }
-
+            #endregion
+            //Save the last position after a new ones been calcualted
             lastPosition = new Vector2(balls[0].transform.position.x, balls[0].transform.position.y);
         }
         #endregion
+    }
+
+    /// <summary>
+    /// A method to move the camera right smoothly with smooth damp
+    /// </summary>
+    private void moveRight()
+    {
+        //SmoothDamp allows us to smoothly transition between directions. We give it a target that factors for the new position with camera speed and ball velocity so it can always keep up. Then for the speed with use a similar calculation again so it keeps up.
+        velocity = new Vector3(balls[0].GetComponent<Rigidbody2D>().linearVelocityX + Time.deltaTime, 0, 0);
+        thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(thisCam.position.x + camSpeedx + balls[0].GetComponent<Rigidbody2D>().linearVelocityX * Time.deltaTime, thisCam.position.y, thisCam.position.z), ref velocity, balls[0].GetComponent<Rigidbody2D>().linearVelocityX + camSpeedx * Time.deltaTime);
+
     }
 }
