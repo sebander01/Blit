@@ -15,6 +15,7 @@ public class CameraController : MonoBehaviour
     public float offSetx;
     public float offSety;
     private Vector3 velocity = Vector3.zero;
+    private Vector3 averageSum;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,10 +45,32 @@ public class CameraController : MonoBehaviour
     {
         #region SetAverageCameraPosition
         //If there are multiple balls in the scene start trying to average it
-        if (balls.Count != 0 || balls.Count != 1)
+        if (balls.Count >= 2)
         {
+            #region camera position
+            //For each ball in the scene
+            foreach (GameObject ball in balls)
+            {
+                //Add the ball positions togeather
+                averageSum += ball.transform.position;
+                //Add velocity togeather we could care less about z it will be unchanged
+                velocity.x += ball.GetComponent<Rigidbody2D>().linearVelocityX;
+                velocity.y += ball.GetComponent<Rigidbody2D>().linearVelocityY;
+            }
+            //Average is sum / total count of the set
+            averageSum = averageSum / balls.Count;
+            velocity = velocity / balls.Count;
 
+            //Change the camera position in smooth damp to have a smooth transition with camera position as the current, the average of x and y positions as the target, velocity holding linear velocity of x and y, smooth over time is x
+            thisCam.position = Vector3.SmoothDamp(thisCam.position, new Vector3(averageSum.x, averageSum.y, thisCam.position.z), ref velocity, camSpeedx);
+
+            //Reset average sum and velocity so we aren't constantly adding to a grander and grander sum
+            averageSum = new Vector3(0, 0, 0);
+            velocity = new Vector3(0, 0, 0);
+            #endregion
         }
+        #endregion
+        #region SetSingleCameraPosition
         //Otherwise if there is just 1 ball in the scene we need to focus on it
         if (balls.Count == 1)
         {
