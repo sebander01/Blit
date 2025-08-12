@@ -14,10 +14,8 @@ public class SpawnOnTouch : MonoBehaviour
     private int spawnedBalls;
     public bool CanSpawn
     {
-        get => canSpawn;
-        set { 
-            canSpawn = value; 
-        }
+        get { return canSpawn; }
+        set { canSpawn = value; }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
