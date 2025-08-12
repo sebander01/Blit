@@ -20,11 +20,13 @@ public class CameraController : MonoBehaviour
     private Vector3 averageSum;
     public float cameraZoomSpeed;
     public float zoomBuffer;
-
+    private float originalWidth;
+    private float originalHeight;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        originalWidth = thisCam.GetComponent<Camera>().pixelWidth;
+        originalHeight = thisCam.GetComponent<Camera>().pixelHeight;
     }
 
     // Update is called once per frame
@@ -74,7 +76,7 @@ public class CameraController : MonoBehaviour
             velocity = new Vector3(0, 0, 0);
             #endregion
 
-            #region Camera Zoom
+            #region Camera Zoom Out and In
 
             //We need the edges of the screen
             Camera cam = thisCam.GetComponent<Camera>();
@@ -86,22 +88,32 @@ public class CameraController : MonoBehaviour
             //For each and every ball
             foreach(GameObject ball in balls)
             {
+                #region Zoom Out
                 //If the ball goes off the left side of the camera
-                if(ball.transform.position.x - zoomBuffer < leftCameraSide.x)
+                if (ball.transform.position.x - zoomBuffer < leftCameraSide.x)
                 {
                     //Use Mathf.Lerp to smoothly zoom the camera out by the orthographic size + cameraZoomSpeed at a speed of half of cameraZoomSpeed
                     thisCam.GetComponent<Camera>().orthographicSize = Mathf.Lerp(thisCam.GetComponent<Camera>().orthographicSize, thisCam.GetComponent<Camera>().orthographicSize + cameraZoomSpeed, cameraZoomSpeed / 2);
                 }
 
                 //If the ball goes off the right side of the camera
-                if (ball.transform.position.x - zoomBuffer > rightCameraSide.x)
+                else if (ball.transform.position.x + zoomBuffer > rightCameraSide.x)
                 {
                     //Use Mathf.Lerp to smoothly zoom the camera out by the orthographic size + cameraZoomSpeed at a speed of half of cameraZoomSpeed
                     thisCam.GetComponent<Camera>().orthographicSize = Mathf.Lerp(thisCam.GetComponent<Camera>().orthographicSize, thisCam.GetComponent<Camera>().orthographicSize + cameraZoomSpeed, cameraZoomSpeed / 2);
                 }
+                #endregion
+
+                #region Zoom In
+                //If not on the right or left size if we can zoom in then zoom in
+                else if (thisCam.GetComponent<Camera>().orthographicSize > minimumCameraZoom)
+                {
+                    //Use Mathf.Lerp to smoothly zoom the camera in by the orthographic size - cameraZoomSpeed at a speed of half of cameraZoomSpeed
+                    thisCam.GetComponent<Camera>().orthographicSize = Mathf.Lerp(thisCam.GetComponent<Camera>().orthographicSize, thisCam.GetComponent<Camera>().orthographicSize - cameraZoomSpeed, cameraZoomSpeed / 2);
+                }
+                #endregion
             }
             #endregion
-
         }
         #endregion
         #region SetSingleCameraPosition

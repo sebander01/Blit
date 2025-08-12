@@ -1013,9 +1013,10 @@ MonoBehaviour:
   offSetx: 3.5
   offSety: 1.5
   minimumCameraZoom: 5.2
-  maximumCameraZoom: 19.7
+  maximumCameraZoom: 19
   cameraZoomSpeed: 0.2
   zoomBuffer: 10
+  multiballYOffset: 2000
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -1228,7 +1229,7 @@ Transform:
   m_GameObject: {fileID: 621496663}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0831, y: -1.4267, z: 1}
+  m_LocalPosition: {x: 0.0831, y: -4.315, z: 1}
   m_LocalScale: {x: 39.79663, y: 8.052804, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1768,7 +1769,7 @@ Transform:
   m_GameObject: {fileID: 1335051085}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0831, y: 6.2383, z: 1}
+  m_LocalPosition: {x: 0.0831, y: 3.35, z: 1}
   m_LocalScale: {x: 39.79663, y: 7.4590626, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
